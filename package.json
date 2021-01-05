@@ -1,0 +1,16 @@
+{
+  "name": "defi2",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:Exayy/blockchain-challenge-2.git",
+  "author": "FH",
+  "license": "MIT",
+  "dependencies": {
+    "@openzeppelin/contracts": "^3.3.0",
+    "dotenv": "^8.2.0"
+  },
+  "devDependencies": {
+    "prettier": "^2.2.1",
+    "prettier-plugin-solidity": "^1.0.0-beta.2"
+  }
+}
