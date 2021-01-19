@@ -1,7 +1,7 @@
 import Web3 from 'web3';
 
-export const getWeb3 = (): Promise<Web3> =>
-  new Promise((resolve, reject) => {
+export async function getWeb3(): Promise<Web3> {
+  return new Promise((resolve, reject) => {
     // Wait for loading completion to avoid race conditions with web3 injection timing.
     (window as any).addEventListener('load', async () => {
       // Modern dapp browsers...
@@ -21,7 +21,7 @@ export const getWeb3 = (): Promise<Web3> =>
         // Use Mist/MetaMask's provider.
         const web3 = (window as any).web3;
         console.log('Injected web3 detected.');
-        resolve(web3);
+        resolve(web3 as Web3);
       }
       // Fallback to localhost; use dev console port by default...
       else {
@@ -32,3 +32,4 @@ export const getWeb3 = (): Promise<Web3> =>
       }
     });
   });
+}

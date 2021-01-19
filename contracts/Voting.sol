@@ -5,7 +5,7 @@ import '@openzeppelin/contracts/access/Ownable.sol';
 
 /**
  * @author Fabien Hebert
- * @notice This contract allow a vote handled by a administrator. Voter are able to add one proposal and vote for one
+ * @notice This contract allow a vote handled by a administrator. Voter are able to add proposals and vote for one of them
  * @dev This contract is based on Ownable contract from OpenZepellin
  */
 contract Voting is Ownable {
@@ -31,18 +31,17 @@ contract Voting is Ownable {
 
     // Events list
     event VoterRegistered(address voterAddress);
+    event ProposalRegistered(uint256 proposalId);
+    event Voted(address voter, uint256 proposalId, uint256 totalVoteCount);
     event ProposalsRegistrationStarted();
     event ProposalsRegistrationEnded();
-    event ProposalRegistered(uint256 proposalId);
     event VotingSessionStarted();
     event VotingSessionEnded();
-    event Voted(address voter, uint256 proposalId);
     event VotesTallied();
     event WorkflowStatusChange(WorkflowStatus previousStatus, WorkflowStatus newStatus);
 
     uint256 public winningProposalId;
     Proposal[] public proposals;
-    uint256 votersCount;
     mapping(address => Voter) public voters;
     WorkflowStatus public workflowStatus = WorkflowStatus.RegisteringVoters;
 
@@ -56,9 +55,6 @@ contract Voting is Ownable {
         proposals.push(Proposal('No winning proposal, please wait for tally', 0));
     }
 
-    /**
-     * @dev to be called when vote status is change, an event will me emitted
-     */
     function changeWorkflowStatus(WorkflowStatus newStatus) internal {
         emit WorkflowStatusChange(workflowStatus, newStatus);
         workflowStatus = newStatus;
@@ -70,24 +66,16 @@ contract Voting is Ownable {
      * - sender must be the owner of the contract
      */
     function addVoter(address voterAddress) external onlyOwner {
-        require(
-            workflowStatus == WorkflowStatus.RegisteringVoters,
-            "This function can't be called because voters registering is closed"
-        );
+        require(workflowStatus == WorkflowStatus.RegisteringVoters, 'Voter registration is closed');
         require(
             voters[voterAddress].isRegistered == false,
             'This voter has already been registered'
         );
         voters[voterAddress] = Voter(true, false, 0);
-        votersCount++;
         emit VoterRegistered(voterAddress);
     }
 
-    /**
-     * @notice Start proposal registration step
-     * Requirements:
-     * - sender must be the owner of the contract
-     */
+    // Vote update
     function startProposalsRegistration() external onlyOwner {
         require(
             workflowStatus == WorkflowStatus.RegisteringVoters,
@@ -97,11 +85,6 @@ contract Voting is Ownable {
         emit ProposalsRegistrationStarted();
     }
 
-    /**
-     * @notice End proposal registration step
-     * Requirements:
-     * - sender must be the owner of the contract
-     */
     function endProposalsRegistration() external onlyOwner {
         require(
             workflowStatus == WorkflowStatus.ProposalsRegistrationStarted,
@@ -111,11 +94,6 @@ contract Voting is Ownable {
         emit ProposalsRegistrationEnded();
     }
 
-    /**
-     * @notice Start voting  step
-     * Requirements:
-     * - sender must be the owner of the contract
-     */
     function startVotingSession() external onlyOwner {
         require(
             workflowStatus == WorkflowStatus.ProposalsRegistrationEnded,
@@ -125,11 +103,6 @@ contract Voting is Ownable {
         emit VotingSessionStarted();
     }
 
-    /**
-     * @notice End voting step
-     * Requirements:
-     * - sender must be the owner of the contract
-     */
     function endVotingSession() external onlyOwner {
         require(
             workflowStatus == WorkflowStatus.VotingSessionStarted,
@@ -175,15 +148,7 @@ contract Voting is Ownable {
         proposals[proposalId].voteCount++;
         voters[msg.sender].hasVoted = true;
         voters[msg.sender].votedProposalId = proposalId;
-        emit Voted(msg.sender, proposalId);
-    }
-
-    function getProposalCount() external view returns (uint256) {
-        return proposals.length - 1;
-    }
-
-    function getVoterCount() external view returns (uint256) {
-        return votersCount;
+        emit Voted(msg.sender, proposalId, proposals[proposalId].voteCount);
     }
 
     function getWinningProposal() external view returns (string memory) {
@@ -193,5 +158,9 @@ contract Voting is Ownable {
         );
         require(proposals.length > 1, 'There were no proposal during this vote');
         return proposals[winningProposalId].description;
+    }
+
+    function getProposalCount() external view returns (uint256) {
+        return proposals.length - 1;
     }
 }

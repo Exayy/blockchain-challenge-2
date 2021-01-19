@@ -1,27 +1,9 @@
-import { Container, Grid, Typography, AppBar, Box } from '@material-ui/core';
-import Step from '@material-ui/core/Step/Step';
-import StepLabel from '@material-ui/core/StepLabel/StepLabel';
-import Stepper from '@material-ui/core/Stepper/Stepper';
+import { Container, Typography, AppBar, Box } from '@material-ui/core';
 import { SnackbarProvider } from 'notistack';
-import React, { useEffect } from 'react';
-import { Accounts } from 'src/containers/Accounts';
-import { getContractInstance } from './utils/getContractInstance';
-
-const voteSteps = ['test', 'yolo', 'troll', 'jerry'];
+import React from 'react';
+import { Web3Container } from './containers/Web3';
 
 function App() {
-  const [activeStep, setActiveStep] = React.useState<number>(0);
-
-  async function getVoteStatus() {
-    const instance = await getContractInstance();
-    const lol = await instance.methods.workflowStatus().call();
-    console.log('Jerry', lol);
-  }
-
-  useEffect(() => {
-    getVoteStatus();
-  }, []);
-
   return (
     <SnackbarProvider maxSnack={3} anchorOrigin={{ horizontal: 'right', vertical: 'top' }}>
       <AppBar position="static">
@@ -33,20 +15,7 @@ function App() {
       </AppBar>
       <Box mt={4}>
         <Container maxWidth="xl">
-          <Grid container spacing={4}>
-            <Grid item xs={8}>
-              <Stepper activeStep={activeStep} alternativeLabel>
-                {voteSteps.map((label) => (
-                  <Step key={label}>
-                    <StepLabel>{label}</StepLabel>
-                  </Step>
-                ))}
-              </Stepper>
-            </Grid>
-            <Grid item xs={4}>
-              <Accounts />
-            </Grid>
-          </Grid>
+          <Web3Container />
         </Container>
       </Box>
     </SnackbarProvider>
