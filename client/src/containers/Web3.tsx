@@ -24,6 +24,7 @@ export const Web3Container: FC = () => {
       setContractInstance(contractInstance);
       setContractOwnerAddress(ownerAddress);
     } catch (e) {
+      console.warn(e);
       enqueueSnackbar(
         "Erreur lors de l'initialisation de Web3, vérifiez votre connexion métamask",
         {

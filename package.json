@@ -3,11 +3,20 @@
   "version": "1.0.0",
   "main": "index.js",
   "repository": "git@github.com:Exayy/blockchain-challenge-2.git",
+  "homepage": "https://Exayy.github.io/blockchain-challenge-2/",  
   "author": "FH",
   "license": "MIT",
+  "scripts": {
+    "predeploy": "yarn build",
+    "deploy": "gh-pages -d build"
+  },
   "dependencies": {
     "@openzeppelin/contracts": "^3.3.0",
-    "dotenv": "^8.2.0"
+    "@openzeppelin/test-helpers": "^0.5.10",
+    "chai": "^4.3.0",
+    "dotenv": "^8.2.0",
+    "install": "^0.13.0",
+    "truffle-hdwallet-provider": "^1.0.17"
   },
   "devDependencies": {
     "prettier": "^2.2.1",
